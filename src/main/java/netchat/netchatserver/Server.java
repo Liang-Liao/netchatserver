@@ -26,9 +26,9 @@ public class Server {
 
 				// 工作
 				System.out.println("正在处理信息：" + new String(request));
-
+				String reply = RequestMapping.mapping(new String(request));
+				
 				// 发送回复信息
-				String reply = "已接收： " + new String(request);
 				responder.send(reply.getBytes(), 0);
 			}
 			responder.close();
