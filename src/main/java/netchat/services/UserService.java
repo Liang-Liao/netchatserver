@@ -1,9 +1,11 @@
 package netchat.services;
 
-import netchat.entities.User;
+import java.util.Map;
 
 public interface UserService {
-	public String login(String data);
-	public String register(String data);
-	public String getUserInfo(String data);
+	public String login(Map map);
+	public String register(Map map);
+	public String getUserInfo(Map map);
+	public String getFriends(Map map);
+	public String signOut(Map map);
 }

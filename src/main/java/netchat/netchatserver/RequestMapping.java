@@ -11,11 +11,18 @@ public class RequestMapping {
 	private static UserService userService = new UserServiceImpl();
 
 	public static String mapping(String data) {
-		String cmd = (String) new Gson().fromJson(data, Map.class).get("cmd");
+		Map map = new Gson().fromJson(data, Map.class);
+		String cmd = (String) map.get("cmd");
 		String rep = null;
 		switch (cmd) {
 		case "login":
-			rep = userService.login(data);
+			rep = userService.login(map);
+			break;
+		case "register":
+			rep = userService.register(map);
+			break;
+		case "signout":
+			rep = userService.signOut(map);
 			break;
 		}
 		return rep;

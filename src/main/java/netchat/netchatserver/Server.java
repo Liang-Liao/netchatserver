@@ -7,7 +7,7 @@ import org.zeromq.ZMQ;
  */
 public class Server {
 
-	//请求应答模式的服务线程
+	// 请求应答模式的服务线程
 	public static class rrThread implements Runnable {
 		@Override
 		public void run() {
@@ -27,7 +27,7 @@ public class Server {
 				// 工作
 				System.out.println("正在处理信息：" + new String(request));
 				String reply = RequestMapping.mapping(new String(request));
-				
+
 				// 发送回复信息
 				responder.send(reply.getBytes(), 0);
 			}
@@ -35,7 +35,7 @@ public class Server {
 			context.term();
 		}
 	}
-
+	
 	public static void main(String[] args) throws InterruptedException {
 		new Thread(new rrThread()).start();
 	}
