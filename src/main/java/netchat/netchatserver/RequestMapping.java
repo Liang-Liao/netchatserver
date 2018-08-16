@@ -31,6 +31,9 @@ public class RequestMapping {
 		case "personalChat":
 			rep = chatService.personalChat(map);
 			break;
+		case "groupChat":
+			rep = chatService.groupChat(map);
+			break;
 		}
 		return rep;
 	}

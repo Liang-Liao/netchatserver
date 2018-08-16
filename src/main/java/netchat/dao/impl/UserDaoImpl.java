@@ -26,7 +26,7 @@ public class UserDaoImpl implements UserDao {
 		Map map = new HashMap();
 		ResultSet rs = JDBCUtils.rs;
 		try {
-			while (rs.next()) {
+			if (rs.next()) {
 				map.put("id", rs.getInt("id"));
 				map.put("username", rs.getString("username"));
 				map.put("account", rs.getString("account"));
@@ -124,5 +124,37 @@ public class UserDaoImpl implements UserDao {
 			}
 		}
 		return friendList;
+	}
+
+	@Override
+	public List<Map<String, String>> getOnlineUser() {
+		String sql = "select * from user where online=1";
+
+		JDBCUtils.queryData(sql, null);
+
+		List onlineUserList = new ArrayList();
+		Map map;
+		ResultSet rs = JDBCUtils.rs;
+		try {
+			while (rs.next()) {
+				map = new HashMap();
+				map.put("id", rs.getInt("id"));
+				map.put("username", rs.getString("username"));
+				map.put("account", rs.getString("account"));
+				map.put("password", rs.getString("password"));
+				map.put("online", rs.getInt("online"));
+				onlineUserList.add(map);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				JDBCUtils.closeAll();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return onlineUserList;
 	}
 }
