@@ -14,8 +14,8 @@ public class PublisherServer {
 		publisher.bind("tcp://*:5556");
 	}
 	
-	public static void publishMsg(String string, String data) {
-		String update = String.format("%s %s", string, data);
+	public static void publishMsg(String zipcode, String data) {
+		String update = String.format("%s %s", zipcode, data);
 		publisher.send(update, 0);
 	}
 }
