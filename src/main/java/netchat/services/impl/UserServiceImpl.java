@@ -6,13 +6,16 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 
+import netchat.dao.FriendDao;
 import netchat.dao.UserDao;
+import netchat.dao.impl.FriendDaoImpl;
 import netchat.dao.impl.UserDaoImpl;
 import netchat.netchatserver.PublisherServer;
 import netchat.services.UserService;
 
 public class UserServiceImpl implements UserService {
 	private UserDao userDao = new UserDaoImpl();
+	private FriendDao friendDao = new FriendDaoImpl();
 
 	@Override
 	public String login(Map map) {
@@ -26,6 +29,7 @@ public class UserServiceImpl implements UserService {
 		if (account.equals(queryMap.get("account")) && password.equals(queryMap.get("password"))) {
 			userDao.updateOnline(account, 1);
 			reMap.put("username", queryMap.get("username"));
+			reMap.put("online", queryMap.get("online"));
 			List<Map<String, String>> friendList = userDao.getFriends(account);
 			Map<String, String> temp = null;
 			for (Map<String, String> friend : friendList) {
@@ -89,6 +93,94 @@ public class UserServiceImpl implements UserService {
 			}
 		}
 		reMap.put("flag", flag.toString());
+		return new Gson().toJson(reMap);
+	}
+
+	@Override
+	public String searchUsers(Map map) {
+		String account = (String) map.get("account");
+		Map<String, Object> reMap = new HashMap<>();
+		
+		List<Map<String, String>> usersList = userDao.getUsers(account);
+		reMap.put("usersList", usersList);
+		
+		return new Gson().toJson(reMap);
+	}
+
+	@Override
+	public String addFriend(Map map) {
+		String fromAccount = (String) map.get("fromAccount");
+		String toAccount = (String) map.get("toAccount");
+		Map<String, Object> reMap = new HashMap<>();
+		int status = friendDao.getFriendByAccount(fromAccount, toAccount);
+		if (status == -1) {
+			Map fromUser = userDao.getUserByAccount(fromAccount);
+			int fromId = (int) fromUser.get("id");
+			Map toUser = userDao.getUserByAccount(toAccount);
+			int toId = (int) toUser.get("id");
+			boolean flag = friendDao.addFriend(fromId, toId);
+			if (flag) {
+				reMap.put("flag", true);
+			}else {
+				reMap.put("flag", false);
+			}
+		}else {
+			reMap.put("flag", false);
+			switch (status) {
+			case 0:
+				reMap.put("promptMsg", "alreadySendApply");
+				break;
+			case 1:
+				reMap.put("promptMsg", "alreadyFriend");
+				break;
+			}
+		}
+		
+		return new Gson().toJson(reMap);
+	}
+
+	@Override
+	public String applyList(Map map) {
+		Map userMap = userDao.getUserByAccount((String) map.get("account"));
+		int userId = (int) userMap.get("id");
+		List<Map<String, String>> applyList = friendDao.getApplyList(userId);
+		Map<String, Object> reMap = new HashMap<>();
+		reMap.put("applyList", applyList);
+		return new Gson().toJson(reMap);
+	}
+
+	@Override
+	public String disAgree(Map map) {
+		String fromAccount = (String) map.get("fromAccount");
+		String toAccount = (String) map.get("toAccount");
+		int fromId = (int) userDao.getUserByAccount(fromAccount).get("id");
+		int toId = (int) userDao.getUserByAccount(toAccount).get("id");
+		
+		boolean flag = friendDao.deleteFriend(fromId, toId);
+		Map<String, Object> reMap = new HashMap<>();
+		reMap.put("flag", flag);
+		return new Gson().toJson(reMap);
+	}
+
+	@Override
+	public String agree(Map map) {
+		String fromAccount = (String) map.get("fromAccount");
+		String toAccount = (String) map.get("toAccount");
+		int fromId = (int) userDao.getUserByAccount(fromAccount).get("id");
+		int toId = (int) userDao.getUserByAccount(toAccount).get("id");
+		System.out.println(fromId + "#" + toId);  //TODO
+		boolean flag = friendDao.updateFriendStatus(fromId, toId, 1);
+		if (flag) {
+			String toUsername = (String) map.get("toUsername");
+			Map<String, String> tempMap = new HashMap<>();
+			tempMap.put("msgType", "agreeFriend");
+			tempMap.put("agreeAccount", toAccount);
+			tempMap.put("agreeUsername", toUsername);
+			tempMap.put("online", "1");
+			PublisherServer.publishMsg(fromAccount, new Gson().toJson(tempMap));
+		}
+		Map<String, Object> reMap = new HashMap<>();
+		reMap.put("flag", flag);
 		return new Gson().toJson(reMap);
 	}
 }

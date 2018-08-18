@@ -94,10 +94,10 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public List<Map<String, String>> getFriends(String account) {
 		String sql = "select usa.username, usa.account, usa.online from user usa "
-				+ "where usa.id in (select fa.u_id2 from user ua, friend fa where ua.account=? and ua.id=fa.u_id1) "
+				+ "where usa.id in (select fa.u_id2 from user ua, friend fa where ua.account=? and fa.status=1 and ua.id=fa.u_id1) "
 				+ "union "
 				+ "select usb.username, usb.account, usb.online from user usb "
-				+ "where usb.id in (select fb.u_id1 from user ub, friend fb where ub.account=? and ub.id=fb.u_id2)";
+				+ "where usb.id in (select fb.u_id1 from user ub, friend fb where ub.account=? and fb.status=1 and ub.id=fb.u_id2)";
 		List paramList = new ArrayList();
 		paramList.add(account);
 		paramList.add(account);
@@ -141,7 +141,6 @@ public class UserDaoImpl implements UserDao {
 				map.put("id", rs.getInt("id"));
 				map.put("username", rs.getString("username"));
 				map.put("account", rs.getString("account"));
-				map.put("password", rs.getString("password"));
 				map.put("online", rs.getInt("online"));
 				onlineUserList.add(map);
 			}
@@ -156,5 +155,38 @@ public class UserDaoImpl implements UserDao {
 		}
 
 		return onlineUserList;
+	}
+
+	@Override
+	public List<Map<String, String>> getUsers(String account) {
+		String sql = "select * from user where account like ?";
+		List paramList = new ArrayList();
+		paramList.add("%" + account + "%");
+
+		JDBCUtils.queryData(sql, paramList);
+
+		List usersList = new ArrayList();
+		Map map;
+		ResultSet rs = JDBCUtils.rs;
+		try {
+			while (rs.next()) {
+				map = new HashMap();
+				map.put("id", rs.getInt("id"));
+				map.put("username", rs.getString("username"));
+				map.put("account", rs.getString("account"));
+				map.put("online", rs.getInt("online"));
+				usersList.add(map);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				JDBCUtils.closeAll();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return usersList;
 	}
 }

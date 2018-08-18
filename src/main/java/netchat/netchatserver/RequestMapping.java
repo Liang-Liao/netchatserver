@@ -27,14 +27,32 @@ public class RequestMapping {
 		case "signout":
 			rep = userService.signOut(map);
 			break;
-			
+		//聊天
 		case "personalChat":
 			rep = chatService.personalChat(map);
 			break;
 		case "groupChat":
 			rep = chatService.groupChat(map);
 			break;
+			
+		//添加好友
+		case "searchUsers":
+			rep = userService.searchUsers(map);
+			break;
+		case "addFriend":
+			rep = userService.addFriend(map);
+			break;
+		case "applyList":
+			rep = userService.applyList(map);
+			break;
+		case "disAgree":
+			rep = userService.disAgree(map);
+			break;
+		case "agree":
+			rep = userService.agree(map);
+			break;
 		}
+		
 		return rep;
 	}
 }

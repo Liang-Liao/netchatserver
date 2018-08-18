@@ -9,4 +9,5 @@ public interface UserDao {
 	Boolean addUser(Map userMap);
 	List<Map<String, String>> getFriends(String account);
 	List<Map<String, String>> getOnlineUser();
+	List<Map<String, String>> getUsers(String account);
 }

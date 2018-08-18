@@ -12,4 +12,9 @@ public class UserDaoImplTest {
 	public void testGetFriends() {
 		System.out.println(userDao.getFriends("123456789"));
 	}
+	
+	@Test
+	public void tesGetUsers() {
+		System.out.println(userDao.getUsers("123"));
+	}
 }
