@@ -14,7 +14,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jeromq.version>0.4.3</jeromq.version>
-		<h2.version>1.4.196</h2.version>
+		<h2.version>2.0.206</h2.version>
 		<gson.version>2.8.2</gson.version>
 	</properties>
 
